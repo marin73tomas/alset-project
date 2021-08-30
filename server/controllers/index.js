@@ -1,4 +1,4 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/researches", (req, res) => {});
+router.get("/researchers", (req, res) => {});

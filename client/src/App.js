@@ -14,7 +14,6 @@ import {
 import { BrowserRouter as Router } from "react-router-dom";
 import { ReactComponent as Logo } from "./assets/logo.svg";
 import Routes from "./Routes";
-import Session from "react-session-api";
 
 class App extends Component {
   state = {
@@ -42,8 +41,10 @@ class App extends Component {
     );
 
     const { collapseID } = this.state;
-    console.log("userEmail", Session.set("userEmail","testtommy"));
-      console.log("userEmail", Session.get("userEmail"))
+
+    console.log ('user email:', localStorage.getItem("userEmail") );
+
+
     return (
       <Router>
         <div className="flyout">
@@ -66,18 +67,22 @@ class App extends Component {
                     <strong>Home</strong>
                   </MDBNavLink>
                 </MDBNavItem>
-                {Session.get("userEmail") || (
+                {!localStorage.getItem("userEmail") ? (
+                  ""
+                ) : (
                   <MDBNavItem>
                     <MDBNavLink
                       exact
-                      to="/researches"
+                      to="/researchers"
                       onClick={this.closeCollapse("mainNavbarCollapse")}
                     >
                       <strong>Researchers</strong>
                     </MDBNavLink>
                   </MDBNavItem>
                 )}
-                {Session.get("userEmail") || (
+                {localStorage.getItem("userEmail") ? (
+                  ""
+                ) : (
                   <MDBNavItem>
                     <MDBNavLink
                       exact
@@ -88,15 +93,62 @@ class App extends Component {
                     </MDBNavLink>
                   </MDBNavItem>
                 )}
-                <MDBNavItem>
-                  <MDBNavLink
-                    exact
-                    to="/login"
-                    onClick={this.closeCollapse("mainNavbarCollapse")}
-                  >
-                    <strong>Login</strong>
-                  </MDBNavLink>
-                </MDBNavItem>
+                {localStorage.getItem("userEmail") ? (
+                  ""
+                ) : (
+                  <MDBNavItem>
+                    <MDBNavLink
+                      exact
+                      to="/login"
+                      onClick={this.closeCollapse("mainNavbarCollapse")}
+                    >
+                      <strong>Login</strong>
+                    </MDBNavLink>
+                  </MDBNavItem>
+                )}
+                {!localStorage.getItem("userEmail") ? (
+                  ""
+                ) : (
+                  <MDBNavItem>
+                    <MDBNavLink
+                      exact
+                      to="/my-subscriptions"
+                      onClick={this.closeCollapse("mainNavbarCollapse")}
+                    >
+                      <strong>My Subscriptions</strong>
+                    </MDBNavLink>
+                  </MDBNavItem>
+                )}
+                {!localStorage.getItem("userEmail") ? (
+                  ""
+                ) : (
+                  <MDBNavItem>
+                    <MDBNavLink
+                      exact
+                      to="/upload-journals"
+                      onClick={this.closeCollapse("mainNavbarCollapse")}
+                    >
+                      <strong>Upload Journals</strong>
+                    </MDBNavLink>
+                  </MDBNavItem>
+                )}
+                {!localStorage.getItem("userEmail") ? (
+                  ""
+                ) : (
+                  <MDBNavItem>
+                    <MDBNavLink
+                      exact
+                      to="/logout"
+                      onClick={() => {
+                        // remove all
+                        localStorage.clear();
+                        this.closeCollapse("mainNavbarCollapse");
+                      }}
+                    >
+                      <strong>Logout</strong>
+                    </MDBNavLink>
+                  </MDBNavItem>
+                )}
               </MDBNavbarNav>
             </MDBCollapse>
           </MDBNavbar>

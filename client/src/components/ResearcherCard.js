@@ -9,29 +9,25 @@ import {
   MDBCol,
 } from "mdbreact";
 const axios = require("axios");
-import { useState, useCallback } from "react";
-import Session from "react-session-api";
+import { useState, useCallback, useEffect} from "react";
 
 const ResearcherCard = ({ _id, name, isSubscribed }) => {
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscribed, setSubscribed] = useState(isSubscribed);
 
+  
   const onSubscribe = useCallback(async () => {
     // don't send again while we are Subscribing
     if (isSubscribing) return;
     // update state
     setIsSubscribing(true);
     // send the actual request
-    const config = {
-      method: "post",
-      url: "/api/researchers/subscribe/",
-      data: {
-        userId: Session.get("currentUserId"),
-        userSubscribesTo: _id,
-      },
-    };
+
     try {
-      const res = await axios.post(config);
+      const res = await axios.post("/api/researchers/subscribe/", {
+        userId: localStorage.getItem("userId"),
+        userSubscribesTo: _id,
+      });
       // once the request is sent, update state again
       if (res.data) setSubscribed(true);
     } catch (error) {
@@ -42,7 +38,7 @@ const ResearcherCard = ({ _id, name, isSubscribed }) => {
 
   return (
     <MDBCol className="my-4" sm="6" md="4">
-      <MDBCard className="mx-auto" >
+      <MDBCard className="mx-auto">
         <MDBCardImage className="img-fluid m-auto" src="/profile.png" waves />
         <MDBCardBody>
           <MDBCardTitle className="text-center">{name}</MDBCardTitle>

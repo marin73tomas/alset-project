@@ -9,16 +9,17 @@ import {
   MDBModalHeader,
   MDBModalFooter,
 } from "mdbreact";
-import {Redirect} from 'react-router-dom'
-import Session from "react-session-api";
+import { Redirect } from "react-router-dom";
 
-const axios = require('axios')
+
+const axios = require("axios");
 
 const Login = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorModal, setErrorModal] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [redirect, setRedirect] = useState(false);
   const handleLogin = (event) => {
     event.preventDefault();
@@ -29,18 +30,21 @@ const Login = () => {
         password,
       })
       .then((resp) => {
-     Session.set("userEmail", email)
+        localStorage.setItem("userEmail", email);
+        localStorage.setItem("userId", resp.data._id);
+        //console.log("set email:", localStorage.getItem("userEmail"));
         setRedirect(true);
       })
       .catch((error) => {
+
+        setErrorMsg(error.response.data.error)
         setErrorModal(true);
         console.log(error);
       });
   };
- if (redirect) return <Redirect to="/my-subscriptions"></Redirect>;
+  if (redirect) return <Redirect to="/my-subscriptions"></Redirect>;
   return (
     <SectionContainer>
-     
       <MDBModal
         isOpen={errorModal}
         toggle={() => {
@@ -52,7 +56,7 @@ const Login = () => {
             setErrorModal(!errorModal);
           }}
         >
-          An error has ocurred
+          An error has ocurred: {errorMsg}
         </MDBModalHeader>
         <MDBModalBody>Please close this modal to continue...</MDBModalBody>
         <MDBModalFooter>

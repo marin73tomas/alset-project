@@ -1,40 +1,28 @@
-import React, { useEffect } from "react";
-import { useDropzone } from "react-dropzone";
-import { useDropzone } from "react-dropzone";
-const axios = require("axios");
+import axios from "axios";
 
-function UploadJournals() {
-  const onDrop = useCallback((acceptedFiles) => {
-       
-    axios
-      .post("/api/researchers/addjournals", {
-        files: acceptedFiles,
-      })
-      .then((resp) => {
-        Session.set("userEmail", email);
-        setRedirect(true);
-      })
-      .catch((error) => {
-        setErrorModal(true);
-        console.log(error);
-      });
-  }, []);
+import React, { Component } from "react";
 
-  const {
-    getRootProps,
-    getInputProps,
-    isDragActive,
-  } = useDropzone({ onDrop, accept: "application/pdf" });
-
+const UploadJournal = () => {
+  const uploadFile = (event) => {
+    const data = new FormData();
+    data.append("file", event.target.files[0]);
+    axios.post("api/researchers/addjournal", data).then((res) => {
+      console.log(res.status, res.statusText, res);
+      axios
+        .post("api/researchers/addjournalUser", {
+          userId: localStorage.getItem("userId"),
+          path: res.data.path,
+        })
+        .then((res) => {
+          alert(res);
+        });
+    });
+  };
   return (
-    <div {...getRootProps()}>
-      <input {...getInputProps()} />
-      {isDragActive ? (
-        <p>Drop the files here ...</p>
-      ) : (
-        <p>Drag 'n' drop some files here, or click to select files</p>
-      )}
+    <div className="d-flex mx-auto justify-content-center align-items-center flex-column">
+      <input onChange={uploadFile} type="file" />
     </div>
   );
-}
-export default UploadJournals;
+};
+
+export default UploadJournal;

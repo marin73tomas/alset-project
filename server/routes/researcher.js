@@ -2,24 +2,32 @@
 const express = require("express");
 const router = express.Router();
 const Researcher = require("../models/researcher");
+const shortid = require("shortid");
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: (req, file, callBack) => {
+    callBack(null, "files/");
+  },
+  filename: (req, file, callBack) => {
+    let id = shortid.generate();
+    let fname = `${id}${file.originalname}`.replaceAll(/\s/g, "");
+    callBack(null, fname);
+  },
+});
+const upload = multer({ storage: storage });
 
 // Researcher login api
 router.post("/login", (req, res) => {
   // Find Researcher with requested email
   Researcher.findOne({ email: req.body.email }, function (err, researcher) {
     if (researcher === null) {
-      return res.status(400).send({
-        message: "Researcher not found.",
-      });
+      return res.status(400).json({ error: "User not found." });
     } else {
       if (researcher.validPassword(req.body.password)) {
-        return res.status(201).send({
-          message: "Researcher Logged In",
-        });
+        return res.send(researcher);
       } else {
-        return res.status(400).send({
-          message: "Wrong Password",
-        });
+        return res.status(400).json({ error: "Wrong Password." });
       }
     }
   });
@@ -33,46 +41,53 @@ router.post("/subscribe", (req, res) => {
         message: "Researcher not found.",
       });
     } else {
-      researcher.update(
-        { _id: req.body.userId },
-        { $push: { subscriptions: req.body.userSubscribesTo } }
-      );
-      return res.status(201).send({
-        message: "Succesfully Subscribed",
+      researcher.subscriptions.push(req.body.userSubscribesTo);
+      researcher.save((err, researcher) => {
+        if (err) {
+          return res.status(400).send({
+            message: "Failed to subscribe.",
+          });
+        } else {
+          return res.status(201).send({
+            message: "Succesfully Subscribed",
+          });
+        }
       });
     }
   });
 });
 
-router.post("/addjournals", (req, res) => {
-  if (!req.files || Object.keys(req.files).length === 0) {
-    return res.status(400).send("No files were uploaded.");
+router.post("/addjournal", upload.single("file"), (req, res, next) => {
+  const file = req.file;
+
+  //console.log(file.filename);
+
+  if (!file) {
+    const error = new Error("No File");
+    error.httpStatusCode = 400;
+    return next(error);
   }
+  res.status(200).json(file);
+});
 
-  // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-
-  // Use the mv() method to place the file somewhere on your server
-  for (let file of req.files) {
-    file.mv("/journals", function (err) {
-      if (err) return res.status(500).send(err);
-
-      res.send("File uploaded!");
-    });
-  }
-
-  // Find Researcher with requested id
+router.post("/addjournalUser", (req, res) => {
   Researcher.findOne({ _id: req.body.userId }, function (err, researcher) {
     if (researcher === null) {
       return res.status(400).send({
         message: "Researcher not found.",
       });
     } else {
-      researcher.update(
-        { _id: req.body.userId },
-        { $push: { journalsUrl: req.body.files.map(file => file.path) } }
-      );
-      return res.status(201).send({
-        message: "Succesfully Subscribed",
+      researcher.journalsURL.push(req.body.path);
+      researcher.save((err, researcher) => {
+        if (err) {
+          return res.status(400).send({
+            message: "Failed to upload file.",
+          });
+        } else {
+          return res.status(201).send({
+            message: "File succesfully uploaded.",
+          });
+        }
       });
     }
   });
@@ -89,7 +104,7 @@ router.post("/signup", (req, res, next) => {
     (newResearcher.password = req.body.password);
 
   // Call setPassword function to hash password
-  console.log(req.body);
+  //e.log(req.body);
   newResearcher.setPassword(req.body.password);
 
   // Save newResearcher object to database
@@ -117,5 +132,26 @@ router.get("/get/:id?", (req, res) => {
     }
   );
 });
+
+// get Researcher by ids api
+router.post("/list", async (req, res) => {
+  const ids = req.body.ids;
+  //console.log(ids);
+  const researchersList = [];
+  if (!ids)
+    return res.status(400).send({
+      message: "No subscriptions found.",
+    });
+  for (let id of ids) {
+    const researcher = await Researcher.findById(
+      id,
+      "_id name email journalsURL"
+    ).exec();
+    researchersList.push(researcher);
+  }
+
+  res.send(researchersList);
+});
+
 // Export module to allow it to be imported in other files
 module.exports = router;
