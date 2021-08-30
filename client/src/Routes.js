@@ -74,13 +74,44 @@ class Routes extends React.Component {
   render() {
     return (
       <Switch>
-        <Route exact path="/researchers" component={Researchers} />
-        <Route exact path="/researcher/:id" component={Researcher} />
-        <Route exact path="/register" component={Registration} />
-        <Route exact path="/login" component={Login} />
-        <Route exact path="/my-subscriptions" component={UserSubscriptions} />
-        <Route exact path="/upload-journals" component={UploadJournals} />
-        <Route path="/" component={Researchers} />
+        <Route
+          exact
+          path="/researchers"
+          component={localStorage.getItem("userEmail") ? Researchers : Login}
+        />
+        <Route
+          exact
+          path="/researcher/:id"
+          component={localStorage.getItem("userEmail") ? Researcher : Login}
+        />
+        <Route
+          exact
+          path="/register"
+          component={
+            !localStorage.getItem("userEmail") ? Registration : Researchers
+          }
+        />
+        <Route
+          exact
+          path="/login"
+          component={!localStorage.getItem("userEmail") ? Login : Researchers}
+        />
+        <Route
+          exact
+          path="/my-subscriptions"
+          component={
+            localStorage.getItem("userEmail") ? UserSubscriptions : Login
+          }
+        />
+        <Route
+          exact
+          path="/upload-journals"
+          component={localStorage.getItem("userEmail") ? UploadJournals : Login}
+        />
+        <Route
+          path="/"
+          component={localStorage.getItem("userEmail") ? Researchers : Login}
+        />
         <Route
           render={function () {
             return <h1>Not Found</h1>;

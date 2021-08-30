@@ -18,6 +18,7 @@ import Routes from "./Routes";
 class App extends Component {
   state = {
     collapseID: "",
+    isLoggedIn: localStorage.getItem("userEmail")
   };
 
   toggleCollapse = (collapseID) => () =>
@@ -42,8 +43,7 @@ class App extends Component {
 
     const { collapseID } = this.state;
 
-    console.log ('user email:', localStorage.getItem("userEmail") );
-
+    //console.log ('user email:', this.state.isLoggedIn );
 
     return (
       <Router>
@@ -67,7 +67,7 @@ class App extends Component {
                     <strong>Home</strong>
                   </MDBNavLink>
                 </MDBNavItem>
-                {!localStorage.getItem("userEmail") ? (
+                {!this.state.isLoggedIn ? (
                   ""
                 ) : (
                   <MDBNavItem>
@@ -80,7 +80,7 @@ class App extends Component {
                     </MDBNavLink>
                   </MDBNavItem>
                 )}
-                {localStorage.getItem("userEmail") ? (
+                {this.state.isLoggedIn ? (
                   ""
                 ) : (
                   <MDBNavItem>
@@ -93,7 +93,7 @@ class App extends Component {
                     </MDBNavLink>
                   </MDBNavItem>
                 )}
-                {localStorage.getItem("userEmail") ? (
+                {this.state.isLoggedIn ? (
                   ""
                 ) : (
                   <MDBNavItem>
@@ -106,7 +106,7 @@ class App extends Component {
                     </MDBNavLink>
                   </MDBNavItem>
                 )}
-                {!localStorage.getItem("userEmail") ? (
+                {!this.state.isLoggedIn ? (
                   ""
                 ) : (
                   <MDBNavItem>
@@ -119,7 +119,7 @@ class App extends Component {
                     </MDBNavLink>
                   </MDBNavItem>
                 )}
-                {!localStorage.getItem("userEmail") ? (
+                {!this.state.isLoggedIn ? (
                   ""
                 ) : (
                   <MDBNavItem>
@@ -132,7 +132,7 @@ class App extends Component {
                     </MDBNavLink>
                   </MDBNavItem>
                 )}
-                {!localStorage.getItem("userEmail") ? (
+                {!this.state.isLoggedIn ? (
                   ""
                 ) : (
                   <MDBNavItem>
@@ -142,6 +142,7 @@ class App extends Component {
                       onClick={() => {
                         // remove all
                         localStorage.clear();
+                        window.location.reload()
                         this.closeCollapse("mainNavbarCollapse");
                       }}
                     >

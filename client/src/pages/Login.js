@@ -33,7 +33,8 @@ const Login = () => {
         localStorage.setItem("userEmail", email);
         localStorage.setItem("userId", resp.data._id);
         //console.log("set email:", localStorage.getItem("userEmail"));
-        setRedirect(true);
+        //setRedirect(true);
+        window.location.reload()
       })
       .catch((error) => {
 
@@ -42,7 +43,7 @@ const Login = () => {
         console.log(error);
       });
   };
-  if (redirect) return <Redirect to="/my-subscriptions"></Redirect>;
+  //if (redirect) return <Redirect to="/my-subscriptions"></Redirect>;
   return (
     <SectionContainer>
       <MDBModal
