@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
+const crypto = require("crypto")
 
+
+
+// Set up researcher Schema
 const ResearcherSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -9,9 +13,16 @@ const ResearcherSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  subscriptions: [{type: mongoose.Types.ObjectId, unique: true}],
+  journalsURL: [{type: String}],
+
   hash: String,
   salt: String,
 });
+
+
+
+
 
 ResearcherSchema.methods.setPassword = function (password) {
   // Creating a unique salt for a particular user
