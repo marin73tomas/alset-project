@@ -8,21 +8,24 @@ const axios = require("axios");
 
 const Researchers = () => {
   const [data, setData] = useState([]);
+  const [individualData, setIndividualData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const isSubscribed = (id) => {
-    return data.filter((e) => {
-      const list = e.subscriptions.filter((s) => {
-        return JSON.stringify(s) == JSON.stringify(id);
-      });
-      //console.log(list)
-      return list && list.length >= 1 && list[0];
-    });
+
+    if (individualData && individualData.length >= 1 ) {
+    
+    for (let sub of individualData[0].subscriptions) {
+      console.log(sub, id, sub == id);
+      if (sub == id) return true;
+    }
+  }
   };
+
   const researchersList = data.map((e) => (
     <ResearcherCard
       key={e._id}
-      isSubscribed={isSubscribed(e._id).length >= 1}
+      isSubscribed={isSubscribed(e._id)}
       {...e}
     ></ResearcherCard>
   ));
@@ -32,6 +35,16 @@ const Researchers = () => {
       .get("/api/researchers/get/")
       .then((resp) => {
         setData(resp.data);
+        setLoading(false);
+      })
+      .catch((resp) => {
+        console.log(resp);
+      });
+
+    axios
+      .get(`/api/researchers/get/${localStorage.getItem("userId")}`)
+      .then((resp) => {
+        setIndividualData(resp.data);
         setLoading(false);
       })
       .catch((resp) => {
