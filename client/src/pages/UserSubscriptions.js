@@ -11,8 +11,14 @@ const UserSubscriptions = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const handleSubscription = (id) => {
+     
+  }
   const subscriptionsList = data.map((e) => (
-    <SubscriptionRow {...e}></SubscriptionRow>
+    <div onClick={handleSubscription.bind(e._id)}>
+      <h2>{e.name}</h2>
+      <p>Number of journals: {e.journalsURL.length}</p>
+    </div>
   ));
 
   const userId = Session.get("userId");
