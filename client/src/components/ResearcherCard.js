@@ -14,7 +14,11 @@ import { useState, useCallback, useEffect} from "react";
 const ResearcherCard = ({ _id, name, isSubscribed }) => {
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscribed, setSubscribed] = useState(isSubscribed);
-
+  
+   useEffect(() => {
+     setSubscribed(isSubscribed);
+   }, [isSubscribed]);
+ 
   
   const onSubscribe = useCallback(async () => {
     // don't send again while we are Subscribing

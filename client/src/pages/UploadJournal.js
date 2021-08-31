@@ -14,13 +14,14 @@ const UploadJournal = () => {
           path: res.data.path,
         })
         .then((res) => {
-          alert(res);
+          alert("PDF has been succesfully uploaded!");
+          event.target.value = ""
         });
     });
   };
   return (
     <div className="d-flex mx-auto justify-content-center align-items-center flex-column">
-      <input onChange={uploadFile} type="file" />
+      <input accept="application/pdf" onChange={uploadFile} type="file" />
     </div>
   );
 };

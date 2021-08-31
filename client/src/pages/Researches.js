@@ -16,7 +16,6 @@ const Researchers = () => {
     if (individualData && individualData.length >= 1 ) {
     
     for (let sub of individualData[0].subscriptions) {
-      console.log(sub, id, sub == id);
       if (sub == id) return true;
     }
   }
